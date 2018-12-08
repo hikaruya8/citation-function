@@ -67,7 +67,7 @@ csv.field_size_limit(sys.maxsize)
 
 
 if len(sys.argv) < 2:
-    print 'usage: run_cv.py feature-dir/'
+    print('usage: run_cv.py feature-dir/')
     sys.exit(1)
 
 feature_dir = sys.argv[1]

@@ -72,7 +72,7 @@ PATH = '../data/arc-json/'
 def main(): 
 
     if len(sys.argv) < 2:
-        print 'Usage: convert_ARC_to_features.py arc-json-dir/ ftr-dir/ out-dir/'
+        print('Usage: convert_ARC_to_features.py arc-json-dir/ ftr-dir/ out-dir/')
         return
 
     input_dir = sys.argv[1]

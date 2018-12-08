@@ -1,6 +1,6 @@
 ARC_DIR=/shared/0/datasets/ACL-ARC/data/
 AAN_DIR=../aan
-ARC_JSON_DIR=/shared/0/datasets/ACL-ARC/json/
+ARC_JSON_DIR=../json
 
 # This is the directory that will contain the feature vectors for each citation
 # in the ARC JSON data
