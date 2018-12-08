@@ -1,19 +1,20 @@
 import sys
 import re
+import importlib
 from joblib import Parallel, delayed
 from fuzzywuzzy import fuzz
 from collections import OrderedDict
 from collections import defaultdict
 #from feature_extraction import *
-from feature_extraction import *
+from sklearn import feature_extraction
 from numpy import mean
 from scipy import spatial
 from nltk.corpus import stopwords
 
 from random import shuffle
 
-reload(sys)  
-sys.setdefaultencoding('utf8')
+importlib.reload(sys)
+# sys.setdefaultencoding('utf8') Python3だと要らない？
 
 
 def fix_label(citation_type):
@@ -96,7 +97,7 @@ def main():
     shuffle(files_to_process)
     # files_to_process = files_to_process[:5]
     
-    print 'Processing %d papers' % (len(files_to_process))
+    print('Processing %d papers' % (len(files_to_process)))
     
     #processed_files = [get_paper_features(fname) for fname in files_to_process]
     processed_files = Parallel(n_jobs=-1, verbose=100)(delayed(get_paper_features)(fname) for fname in files_to_process)
@@ -116,7 +117,7 @@ def main():
             feat_out.write('%s\t%s\t%s\t%s\n' % (pattern, feat, clazz, count))
 
 
-    print 'Indexing features'
+    print('Indexing features')
 
     feature_to_all_vals = defaultdict(list)
         
@@ -134,7 +135,7 @@ def main():
         vals.sort()
         feature_to_median_val[feat] = vals[len(vals)/2]
 
-    print 'Saw %d features across %d papers' % (len(feature_to_index), len(paper_to_feature_dicts))
+    print('Saw %d features across %d papers' % (len(feature_to_index), len(paper_to_feature_dicts)))
     
     for paper_id, paper_feature_dicts in paper_to_feature_dicts.iteritems():
         outfile = open(ftrdir + '/' + paper_id + ".ftr", "w")
@@ -216,7 +217,7 @@ def get_paper_features(json_fname):
         paper_features = get_context_features(citation_context, annotated_data)
               
         if len(paper_features) == 0:
-            print "Unable to find context and features in %s for %s; skipping..."\
+            print("Unable to find context and features in %s for %s; skipping...")\
                 % (json_fname, citation_context['citing_string'])
             continue
 
@@ -298,7 +299,7 @@ def get_paper_features(json_fname):
             vec.update(global_features)
             feature_dicts.append(([cited_id, cite_func, cite_id, cite_type], vec))
 
-    print 'finished', json_fname
+    print('finished', json_fname)
 
     return (annotated_data['paper_id'], feature_dicts)
 
