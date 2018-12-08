@@ -98,7 +98,7 @@ def main():
     shuffle(files_to_process)
     # files_to_process = files_to_process[:5]
     
-    print('Processing %d papers' % (len(files_to_process)))
+    print(('Processing %d papers' % (len(files_to_process))))
     
     #processed_files = [get_paper_features(fname) for fname in files_to_process]
     processed_files = Parallel(n_jobs=-1, verbose=100)(delayed(get_paper_features)(fname) for fname in files_to_process)
@@ -114,7 +114,7 @@ def main():
 
     #print len(FEATURE_FIRING_COUNTS)
     with open('feature-counts.tsv', 'w') as feat_out:
-        for (pattern, feat, clazz), count in FEATURE_FIRING_COUNTS.iteritems():
+        for (pattern, feat, clazz), count in FEATURE_FIRING_COUNTS.items():
             feat_out.write('%s\t%s\t%s\t%s\n' % (pattern, feat, clazz, count))
 
 
@@ -123,22 +123,22 @@ def main():
     feature_to_all_vals = defaultdict(list)
         
     # Make a quick pass through to assign features to indices
-    for paper_id, paper_feature_dicts in paper_to_feature_dicts.iteritems():
+    for paper_id, paper_feature_dicts in paper_to_feature_dicts.items():
         for (labels, paper_feature_dict) in paper_feature_dicts:
-            for feature, val in paper_feature_dict.iteritems():
+            for feature, val in paper_feature_dict.items():
                 if feature not in feature_to_index:
                     feature_to_index[feature] = len(feature_to_index)
                     features_in_order.append(feature)
                 feature_to_all_vals[feature].append(val)
 
     feature_to_median_val = {}
-    for feat, vals in feature_to_all_vals.iteritems():
+    for feat, vals in feature_to_all_vals.items():
         vals.sort()
         feature_to_median_val[feat] = vals[len(vals)/2]
 
-    print('Saw %d features across %d papers' % (len(feature_to_index), len(paper_to_feature_dicts)))
+    print(('Saw %d features across %d papers' % (len(feature_to_index), len(paper_to_feature_dicts))))
     
-    for paper_id, paper_feature_dicts in paper_to_feature_dicts.iteritems():
+    for paper_id, paper_feature_dicts in paper_to_feature_dicts.items():
         outfile = open(ftrdir + '/' + paper_id + ".ftr", "w")
         wr = writer(outfile, delimiter="\t")
 
@@ -218,8 +218,8 @@ def get_paper_features(json_fname):
         paper_features = get_context_features(citation_context, annotated_data)
               
         if len(paper_features) == 0:
-            print("Unable to find context and features in %s for %s; skipping...")\
-                % (json_fname, citation_context['citing_string'])
+            print(("Unable to find context and features in %s for %s; skipping...")\
+                % (json_fname, citation_context['citing_string']))
             continue
 
         # Add the topics of this paper with the idea that some topics have
@@ -245,7 +245,7 @@ def get_paper_features(json_fname):
                          paper_features))
         
 
-    for cited_id, vecs in cited_id_to_vecs.iteritems():
+    for cited_id, vecs in cited_id_to_vecs.items():
 
         features = set()
         global_features = OrderedDict()
@@ -265,7 +265,7 @@ def get_paper_features(json_fname):
         global_features['NUM_OCCURRENCES'] = len(vecs)
 
         # Add features for how many times it was cited per section
-        for sec, count in cites_per_section.iteritems():
+        for sec, count in cites_per_section.items():
             global_features['Cites_in_' + sec] = count
 
         # Add feature for total number of refs
@@ -291,7 +291,7 @@ def get_paper_features(json_fname):
         global_features['Num_indirect_cites'] = total_ind_cites
 
         # Add features for how many times it was indirectly cited per section
-        for sec, count in ind_cites_per_sec.iteritems():
+        for sec, count in ind_cites_per_sec.items():
             global_features['Indirect_cites_in_' + sec] = count
 
         #print 'Saw %s indirectly cited %d times, breadown: %s' % (cited_id, total_ind_cites, str(ind_cites_per_sec))
@@ -300,7 +300,7 @@ def get_paper_features(json_fname):
             vec.update(global_features)
             feature_dicts.append(([cited_id, cite_func, cite_id, cite_type], vec))
 
-    print('finished', json_fname)
+    print(('finished', json_fname))
 
     return (annotated_data['paper_id'], feature_dicts)
 
