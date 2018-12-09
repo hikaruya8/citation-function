@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib
 from numpy import histogram
 from matplotlib import rcParams
-import cPickle
+import pickle
 from scipy.stats import pearsonr
 from sklearn.linear_model import LogisticRegression
 from nltk.tokenize.punkt import PunktSentenceTokenizer as sentTokenizer
@@ -58,7 +58,7 @@ from imblearn.combine import SMOTEENN
 csv.field_size_limit(sys.maxsize)
 
 if len(sys.argv) != 3:
-    print 'usage: python classify-papers.py input-dir/ classifier.pickle'
+    print('usage: python classify-papers.py input-dir/ classifier.pickle')
     quit(1)
 
 
@@ -77,7 +77,7 @@ with open(feature_dir + 'feature-indices.tsv') as f:
         feature_to_index[feature] = index
 
 
-print 'Loading topic vectors'
+print('Loading topic vectors')
 citation_id_to_topic_vecs = {}
 
 num_topics = 100
@@ -92,17 +92,17 @@ with open('../working-files/topics3/%d-topics/citance.doc-topics.txt' % num_topi
                 citance_topic_line = citance_topic_f.readline()
                 extended_topic_line = extended_topic_f.readline()
 
-                citance_topic_vec = np.array(map(float, citance_topic_line[:-1].split('\t')[2:]))
-                extended_topic_vec = np.array(map(float, extended_topic_line[:-1].split('\t')[2:]))
+                citance_topic_vec = np.array(list(map(float, citance_topic_line[:-1].split('\t')[2:])))
+                extended_topic_vec = np.array(list(map(float, extended_topic_line[:-1].split('\t')[2:])))
                 
                 citation_id_to_topic_vecs[citation_id] = (citance_topic_vec, extended_topic_vec)
                 
                 if (line_no+1) % 10000 == 0:
-                    print 'loaded %d lines' % (line_no+1)
+                    print(('loaded %d lines' % (line_no+1)))
                 if (line_no+1) % 100000 == 0:
                     break
 
-print 'Loaded %d topic vectors' % (len(citation_id_to_topic_vecs))
+print(('Loaded %d topic vectors' % (len(citation_id_to_topic_vecs))))
 
 
 x = []
@@ -111,7 +111,7 @@ paper_indices = []
 count = 0
 for fname in os.listdir(feature_dir):
     if '.ftr' not in fname:
-        print 'skipping ' + fname
+        print(('skipping ' + fname))
         continue
     f = open(feature_dir + fname, "r")
     #print feature_dir + fname
@@ -128,7 +128,7 @@ for fname in os.listdir(feature_dir):
 
         # print citation_id
         if citation_id not in citation_id_to_topic_vecs:
-            print 'skipping!'
+            print('skipping!')
             continue
 
         if cite_function == 'Unknown':
@@ -152,7 +152,7 @@ for fname in os.listdir(feature_dir):
         class_ = cite_function
         # print class_
 
-        feature_vec = map(float, cols[4:])
+        feature_vec = list(map(float, cols[4:]))
         topic_vecs = citation_id_to_topic_vecs[citation_id]
         feature_vec = np.concatenate([feature_vec, topic_vecs[0], topic_vecs[1]])
 
@@ -167,11 +167,11 @@ for fname in os.listdir(feature_dir):
 
 _c = Counter(y)
 class_weights = {}
-for xx, cc in _c.iteritems():
+for xx, cc in list(_c.items()):
     weight = len(y) / (len(_c) * float(cc))
     if xx == 'CompareOrContrast':
         weight += (weight/2)
-    print 'count:', xx, cc, weight
+    print(('count:', xx, cc, weight))
     class_weights[xx] = weight
 
 class_weights2 = {
@@ -197,7 +197,7 @@ class_weights3 = {
 
 x = numpy.array(x)
 y = numpy.array(y)
-print x.shape, y.shape, len(paper_indices)
+print((x.shape, y.shape, len(paper_indices)))
 
 ######################################
 # Training data loaded -- build the classifier
@@ -232,7 +232,7 @@ smote = osam.SMOTE(k_neighbors=5, ratio='auto')
 #clf = pl.make_pipeline(SMOTETomek(smote=smote), clf)
 clf = pl.make_pipeline(smote, clf)
 
-print 'Training the classifer'
+print('Training the classifer')
 clf.fit(x, y)
 
 #joblib.dump(clf, outfile, compress=1) 
