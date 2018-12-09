@@ -177,9 +177,9 @@ def get_paper_features(json_fname):
             with open(teufel_data_dir + '/' + json_fname) as jf:
                 annotated_data = json.loads(jf.read())
                 is_teufel = True
-        # except:
-        #     with open(mc_data_dir + '/' + json_fname) as jf:
-        #         annotated_data = json.loads(jf.read())
+        except:
+            with open(mc_data_dir + '/' + json_fname) as jf: #mc_data_dir？
+                annotated_data = json.loads(jf.read())
 
 
     # Need this to exclude certain dep-path data
